@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  emqx-broker:
+    image: emqx:latest
+    env_file:
+      - ./.env
+    container_name: emqx-broker
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    ports:
+      - 1883:1883
+      - 8083:8083
+      - 8084:8084
+      - 8883:8883
+      - 18083:18083  
+
+  mqttx-web-client:
+    image: emqx/mqttx-web:latest
+    container_name: mqttx-web-client
+    ports:
+      - 80:80
