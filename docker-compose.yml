@@ -5,6 +5,7 @@ services:
     image: emqx:latest
     env_file:
       - ./.env
+    restart: unless-stopped
     container_name: emqx-broker
     healthcheck:
       test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
@@ -12,14 +13,20 @@ services:
       timeout: 25s
       retries: 5
     ports:
-      - 1883:1883
-      - 8083:8083
-      - 8084:8084
-      - 8883:8883
-      - 18083:18083  
+      - ${DOCKER_MQTT_BROKER_PORT}:1883
+      - ${DOCKER_MQTT_BROKER_SSL_PORT}:8083
+      - ${DOCKER_MQTT_WEBSOCKET_PORT}:8084
+      - ${DOCKER_MQTT_WEBSOCKET_SSL_PORT}:8883
+      - ${DOCKER_MQTT_DASHBOARD_PORT}:18083  
+    volumes:
+      - ${DOCKER_MQTT_VOLUME}/data:/opt/emqx/data
+      - ${DOCKER_MQTT_VOLUME}/log:/opt/emqx/log
 
   mqttx-web-client:
     image: emqx/mqttx-web:latest
     container_name: mqttx-web-client
+    restart: unless-stopped
+    env_file:
+      - ./.env
     ports:
-      - 80:80
+      - ${DOCKER_MQTT_WEBCLIENT_PORT}:80
